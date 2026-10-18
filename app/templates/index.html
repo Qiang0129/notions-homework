@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>课信 · 作业邮件提醒助手</title><link rel="icon" href="/static/favicon.svg"><link rel="stylesheet" href="/static/vendor/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="/static/vendor/bootstrap-icons/bootstrap-icons.min.css"><link rel="stylesheet" href="/static/vendor/quill/quill.snow.css"><link rel="stylesheet" href="/static/app.css?v=send-policy-20261018-1"></head>
+<body>
+<a class="skip-link" href="#main">跳到主要内容</a>
+<aside class="sidebar offcanvas-lg offcanvas-start" tabindex="-1" id="navigation" aria-label="主导航">
+  <div class="brand"><span class="brand-mark"><i class="bi bi-envelope-paper" aria-hidden="true"></i></span><div><strong>课信<span class="brand-en">CLASSNOTE</span></strong><small>作业邮件提醒助手</small></div><button class="btn-close d-lg-none ms-auto" data-bs-dismiss="offcanvas" data-bs-target="#navigation" aria-label="关闭导航"></button></div>
+  <div class="nav-caption">工作空间</div>
+  <nav class="nav flex-column" id="app-nav"><a class="nav-link active" href="#compose" data-route="compose"><i class="bi bi-pencil-square" aria-hidden="true"></i>写通知<span class="nav-dot"></span></a><a class="nav-link" href="#classes" data-route="classes"><i class="bi bi-people" aria-hidden="true"></i>班级名单</a><a class="nav-link" href="#templates" data-route="templates"><i class="bi bi-layout-text-window" aria-hidden="true"></i>邮件模板</a><a class="nav-link" href="#history" data-route="history"><i class="bi bi-send-check" aria-hidden="true"></i>发送记录</a></nav>
+  <div class="nav-caption mt-4">偏好设置</div><a class="nav-link" href="#settings" data-route="settings"><i class="bi bi-sliders2" aria-hidden="true"></i>邮箱设置</a>
+  <div class="sidebar-note"><i class="bi bi-laptop" aria-hidden="true"></i><strong>你的本地工作空间</strong><p>名单与通知保存在本机。<br>邮件仅在确认后发送。</p></div>
+  <div class="sidebar-bottom"><span class="connection-dot"></span><span>本地服务运行中</span><button id="logout" class="icon-btn ms-auto" aria-label="退出登录" title="退出登录"><i class="bi bi-box-arrow-right"></i></button></div>
+</aside>
+<div class="app-shell">
+<header class="topbar"><div class="d-flex align-items-center gap-3"><button class="icon-btn d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#navigation" aria-label="打开导航"><i class="bi bi-list fs-4"></i></button><span class="breadcrumb-label">工作空间 <span>/</span> <strong id="breadcrumb-current">写通知</strong></span></div><div class="d-flex align-items-center gap-3"><span class="local-badge"><i class="bi bi-hdd-network" aria-hidden="true"></i> 本地版</span><span class="avatar" aria-label="助教账户">助</span></div></header>
+<div class="network-warning" role="note"><i class="bi bi-shield-exclamation" aria-hidden="true"></i><span>HTTP 连接未加密，仅用于可信私人网络。请勿公网映射；建议在电脑本机填写邮箱授权码。</span></div>
+<main id="main" tabindex="-1">
+<section data-page="compose" class="page">
+  <div class="page-heading"><div><div class="eyebrow">WRITE A NOTICE</div><h1>写通知<span class="heading-dot">.</span></h1><p>把要紧的事，清楚妥帖地告诉每位同学。</p></div><div class="heading-actions"><button class="btn btn-soft" id="open-drafts"><i class="bi bi-folder2-open"></i> 打开草稿</button><button class="btn btn-outline-secondary" id="save-draft"><i class="bi bi-file-earmark-check"></i> 保存草稿</button></div></div>
+  <div class="workflow-strip"><span class="current"><b>01</b> 编辑内容</span><i class="bi bi-chevron-right"></i><span><b>02</b> 选择同学</span><i class="bi bi-chevron-right"></i><span><b>03</b> 确认发送</span><small class="ms-auto d-none d-xl-inline">一次一封，每位同学独立收件</small></div>
+  <div class="mobile-mode" role="group" aria-label="编辑与预览切换"><button class="active" id="mode-edit">编辑内容</button><button id="mode-preview">邮件预览</button></div>
+  <div class="compose-layout" id="compose-layout">
+  <div class="compose-form">
+    <div class="panel sender-panel"><div class="section-title"><span class="section-icon"><i class="bi bi-envelope-at"></i></span><div><h2>从哪个邮箱发送</h2><p>同学收到邮件时显示的发件人</p></div><a href="#settings" class="text-action ms-auto">管理邮箱 <i class="bi bi-arrow-up-right"></i></a></div><label class="visually-hidden" for="compose-profile">发送邮箱</label><select id="compose-profile" class="form-select"><option value="">请先添加一个发送邮箱</option></select></div>
+    <div class="panel content-panel"><div class="section-title"><span class="section-icon"><i class="bi bi-text-paragraph"></i></span><div><h2>通知内容</h2><p>先选一个模板，再写下你的提醒</p></div></div>
+      <div class="template-pills" id="template-pills" aria-label="选择邮件模板"></div>
+      <form id="notice-form"><div class="row g-3"><div class="col-sm-6"><label class="form-label" for="course">课程名称 <span>*</span></label><input id="course" class="form-control" maxlength="100" placeholder="例如：高等数学 A" required></div><div class="col-sm-6"><label class="form-label" for="assignment">本次作业 <span>*</span></label><input id="assignment" class="form-control" maxlength="150" placeholder="例如：第三章课后习题" required></div><div class="col-sm-6"><label class="form-label" for="deadline">截止时间 <span>*</span></label><input id="deadline" type="datetime-local" class="form-control" required><div class="field-hint">统一按北京时间填写</div></div><div class="col-sm-6"><label class="form-label" for="submission-email">提交邮箱 <span>*</span></label><input id="submission-email" type="email" inputmode="email" autocomplete="email" spellcheck="false" class="form-control" maxlength="254" placeholder="例如：homework@example.com" required><div class="field-hint">用于接收作业，可与发件邮箱不同</div></div></div>
+      <div class="field-divider"></div><div class="mb-3"><label class="form-label" for="subject">邮件主题 <span>*</span></label><input id="subject" class="form-control" maxlength="200" required></div><div class="mb-3"><label class="form-label" for="mail-title">邮件内标题 <span>*</span></label><input id="mail-title" class="form-control" maxlength="200" required></div></form>
+      <label class="form-label" id="body-label">正文内容 <span>*</span></label>
+      <div id="editor-toolbar"><span class="ql-formats"><select class="ql-header" aria-label="标题级别"><option selected></option><option value="1"></option><option value="2"></option></select></span><span class="ql-formats"><button class="ql-bold" aria-label="粗体"></button><button class="ql-italic" aria-label="斜体"></button><button class="ql-underline" aria-label="下划线"></button></span><span class="ql-formats"><button class="ql-list" value="ordered" aria-label="有序列表"></button><button class="ql-list" value="bullet" aria-label="无序列表"></button><button class="ql-link" aria-label="插入链接"></button></span><span class="ql-formats"><select class="ql-color" aria-label="文字颜色"><option selected></option><option value="#c2410c"></option><option value="#1d4ed8"></option><option value="#166534"></option><option value="#b91c1c"></option><option value="#64748b"></option></select><button class="ql-clean" aria-label="清除格式"></button></span></div><div id="editor" aria-labelledby="body-label"></div>
+      <div class="variable-bar"><span><i class="bi bi-braces"></i> 插入变量</span><button type="button" data-variable="name">姓名</button><button type="button" data-variable="class_name">班级</button><button type="button" data-variable="course">课程</button><button type="button" data-variable="assignment">作业</button><button type="button" data-variable="deadline">截止时间</button><button type="button" data-variable="submission_email">提交邮箱</button></div>
+      <div class="d-flex justify-content-between align-items-center mt-3"><small class="muted">姓名等变量会为每位同学单独替换。</small><button class="text-action" id="save-as-template"><i class="bi bi-bookmark-plus"></i> 存为模板</button></div>
+    </div>
+    <section class="panel recipient-picker" id="recipient-picker" aria-labelledby="recipient-picker-title">
+      <div class="section-title"><span class="section-icon"><i class="bi bi-people" aria-hidden="true"></i></span><div><h2 id="recipient-picker-title">选择收件同学</h2><p>从保存的班级中选择本次通知对象</p></div></div>
+      <label class="visually-hidden" for="compose-class">收件班级</label><select id="compose-class" class="form-select"><option value="">请选择一个班级</option></select>
+      <div class="recipient-controls" id="recipient-controls" hidden>
+        <div class="recipient-search-toolbar">
+          <div class="recipient-search-field"><i class="bi bi-search" aria-hidden="true"></i><label class="visually-hidden" for="recipient-search">搜索收件同学的姓名或邮箱</label><input id="recipient-search" type="search" placeholder="搜索姓名或邮箱" autocomplete="off" spellcheck="false" aria-controls="recipient-area"><button type="button" class="icon-btn" id="recipient-search-clear" aria-label="清空收件人搜索" title="清空搜索" hidden><i class="bi bi-x-lg" aria-hidden="true"></i></button></div>
+          <span class="recipient-selection-summary" id="recipient-selection-summary" role="status" aria-live="polite" aria-atomic="true">已选 <strong id="recipient-count">0</strong> / <span id="recipient-total">0</span> 人</span>
+        </div>
+        <div class="recipient-tools"><label class="recipient-select-all"><input type="checkbox" id="select-all-recipients" disabled><span id="recipient-select-label">选择全班同学</span></label><span id="recipient-match-summary" role="status" aria-live="polite" aria-atomic="true"></span></div>
+        <p class="recipient-hidden-selection" id="recipient-hidden-selection" role="status" aria-live="polite" aria-atomic="true" hidden></p>
+      </div>
+      <div id="recipient-area" class="recipient-area" role="region" aria-labelledby="recipient-picker-title" aria-busy="false" tabindex="0"><div class="recipient-empty"><i class="bi bi-people" aria-hidden="true"></i><div><strong>先选择一个班级</strong><p>选择后可以搜索姓名或邮箱，勾选本次收件同学。</p><a href="#classes" class="text-action">创建班级并导入同学</a></div></div></div>
+    </section>
+  </div>
+  <aside class="preview-column"><div class="preview-header"><div><span class="live-dot"></span><strong>收件效果预览</strong></div><div class="preview-device" role="group" aria-label="预览宽度"><button class="active" id="preview-desktop" aria-label="桌面邮件预览"><i class="bi bi-display"></i></button><button id="preview-mobile" aria-label="手机邮件预览"><i class="bi bi-phone"></i></button></div></div><div class="mail-preview"><div class="mail-preview-meta"><div class="d-flex align-items-center gap-2 mb-2"><span class="mail-avatar"><i class="bi bi-envelope"></i></span><div><strong id="preview-sender">课程助教</strong><small id="preview-from">请先选择发送邮箱</small></div></div><div class="preview-to"><label for="preview-student">预览收件人</label><select id="preview-student" class="form-select form-select-sm"><option value="">李同学（示例）</option></select></div><h3 id="preview-subject">填写内容后，在这里查看邮件效果</h3></div><div class="preview-frame-wrap" id="preview-frame-wrap"><iframe id="mail-preview" sandbox="" title="邮件内容预览"></iframe><div id="preview-placeholder" class="preview-placeholder"><div class="paper-illustration"><i class="bi bi-envelope-paper"></i><span></span><span></span><span></span></div><h3>一封清晰的提醒，从这里开始</h3><p>填写课程、作业、截止时间和提交邮箱，<br>即可查看同学收到的邮件样式。</p></div></div></div><p class="preview-note"><i class="bi bi-info-circle"></i> 不同邮箱显示可能略有差异，建议发送前先试发。</p><div id="preview-status" class="preview-status" role="status" aria-live="polite"></div></aside>
+  </div>
+  <div class="send-bar"><div><strong><span id="send-count">0</span> 位同学</strong><small id="send-summary">选好邮箱与收件人，再确认发送</small></div><div class="send-actions"><button class="btn btn-outline-secondary" id="test-mail"><i class="bi bi-send"></i><span>发送测试</span></button><button class="btn btn-primary" id="review-send"><span>确认并发送</span><i class="bi bi-arrow-right"></i></button></div></div>
+</section>
+<section data-page="classes" class="page roster-page" hidden aria-labelledby="roster-page-title">
+  <div class="page-heading roster-page-heading">
+    <div><h1 id="roster-page-title">班级名单<span class="heading-dot">.</span></h1><p>整理一次，下次提醒就从这里开始。</p></div>
+    <button class="btn btn-primary" id="add-class"><i class="bi bi-plus-lg" aria-hidden="true"></i> 新建班级</button>
+  </div>
+  <div class="class-layout">
+    <aside class="roster-sidebar" aria-labelledby="class-list-label">
+      <div class="roster-sidebar-heading"><h2 id="class-list-label">我的班级</h2><span id="class-list-count">0</span></div>
+      <div id="class-list" class="class-list" role="region" aria-label="班级列表" tabindex="0"></div>
+    </aside>
+    <label class="roster-class-picker" for="managed-class-select"><span>当前班级</span><select id="managed-class-select" class="form-select" aria-label="切换管理班级"></select></label>
+    <div class="panel class-detail roster-card">
+      <div class="roster-card-head">
+        <div class="roster-class-heading"><div class="roster-class-title"><h2 id="class-title">选择一个班级</h2><span id="class-member-count" class="roster-count" hidden></span></div><p id="class-subtitle">名单仅保存在本机</p></div>
+        <div class="roster-actions" role="group" aria-label="班级操作">
+          <button class="btn btn-outline-secondary btn-sm" id="import-students"><i class="bi bi-upload" aria-hidden="true"></i> 批量导入</button>
+          <button class="btn btn-soft btn-sm" id="add-student"><i class="bi bi-plus-lg" aria-hidden="true"></i> 添加同学</button>
+          <button class="btn btn-soft btn-sm" id="rename-class">重命名</button>
+          <button class="icon-btn danger" id="delete-class" aria-label="删除当前班级" title="删除当前班级"><i class="bi bi-trash3" aria-hidden="true"></i></button>
+        </div>
+      </div>
+      <div class="roster-toolbar" id="roster-toolbar">
+        <div class="search-field"><i class="bi bi-search" aria-hidden="true"></i><input id="student-search" type="search" placeholder="搜索姓名或邮箱" aria-label="搜索姓名或邮箱" aria-controls="student-list"><button id="clear-student-search" class="icon-btn" aria-label="清空搜索" title="清空搜索" hidden><i class="bi bi-x-lg" aria-hidden="true"></i></button></div>
+        <span id="student-search-status" class="roster-search-status" role="status" aria-live="polite" aria-atomic="true"></span>
+      </div>
+      <div class="roster-top-pagination"><span id="roster-top-range" class="roster-range"></span><nav id="roster-top-pages" class="roster-pages" aria-label="名单顶部分页"></nav></div>
+      <div id="student-list" class="roster-student-list" role="region" aria-labelledby="class-title" tabindex="0" aria-busy="false"></div>
+      <footer class="roster-pagination">
+        <div class="roster-pagination-meta"><span id="roster-range" class="roster-range" role="status" aria-live="polite" aria-atomic="true"></span><label class="roster-size-label" for="roster-page-size">每页<select id="roster-page-size" class="form-select"><option value="20">20</option><option value="50">50</option><option value="100">100</option></select>人</label></div>
+        <nav id="roster-pages" class="roster-pages" aria-label="名单分页"></nav>
+      </footer>
+    </div>
+  </div>
+</section>
+<section data-page="templates" class="page" hidden><div class="page-heading"><div><div class="eyebrow">A THOUGHTFUL START</div><h1>邮件模板<span class="heading-dot">.</span></h1><p>从一封得体的邮件开始，再加上你的表达。</p></div><button class="btn btn-primary" id="new-template"><i class="bi bi-plus-lg"></i> 从当前内容保存模板</button></div><div id="template-list" class="template-grid"></div></section>
+<section data-page="history" class="page" hidden><div class="page-heading"><div><div class="eyebrow">SENDING ACTIVITY</div><h1>发送记录<span class="heading-dot">.</span></h1><p>每一封的进度与结果，都有迹可循。</p></div><button class="btn btn-outline-secondary" id="refresh-jobs"><i class="bi bi-arrow-clockwise"></i> 刷新记录</button></div><div class="info-note"><i class="bi bi-info-circle"></i><span>“已提交”表示 SMTP 服务器已接受，不等于已送达或已读。结果待确认的邮件不会自动重发。</span></div><div id="job-list" class="panel"></div><div id="job-detail" class="panel mt-4" hidden></div></section>
+<section data-page="settings" class="page" hidden><div class="page-heading"><div><div class="eyebrow">SENDER ACCOUNTS</div><h1>邮箱设置<span class="heading-dot">.</span></h1><p>保存常用邮箱，在每次发送前轻松切换。</p></div><button class="btn btn-primary" id="add-profile"><i class="bi bi-plus-lg"></i> 添加发送邮箱</button></div><div class="info-note"><i class="bi bi-shield-check"></i><span>SMTP 授权码保存在 Windows 系统凭据库，不写入数据库、不在页面回显。请使用授权码或应用专用密码，而不是日常登录密码。</span></div><div id="profile-list" class="profile-grid"></div><div class="help-panel"><h2><i class="bi bi-lightbulb"></i> 配置前的小提示</h2><p><strong>QQ 邮箱：</strong>先在邮箱设置中开启 SMTP 服务，并获取授权码。</p><p><strong>Gmail：</strong>开启两步验证后创建应用专用密码；部分学校或组织账户可能不可用。本版不支持 Google OAuth。</p><p><strong>自定义 SMTP：</strong>选择隐式 TLS（通常 465）或 STARTTLS（通常 587）；不会使用明文连接或跳过证书校验。</p></div></section>
+</main><footer class="app-footer"><span>课信 · 让课程沟通少一点忙乱</span><span>LOCAL FIRST / v1.0</span></footer>
+</div>
+<aside class="offcanvas offcanvas-end import-drawer" tabindex="-1" id="import-drawer" aria-labelledby="import-drawer-title" aria-describedby="import-drawer-context" data-bs-backdrop="true" data-bs-scroll="false">
+  <header class="import-drawer-header">
+    <div><p class="import-drawer-kicker">班级名单</p><h2 id="import-drawer-title">批量导入同学</h2><p id="import-drawer-context">导入到 <strong id="import-target-class"></strong></p></div>
+    <button type="button" class="icon-btn" id="import-close" aria-label="关闭批量导入"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+  </header>
+  <ol class="import-steps" aria-label="导入步骤"><li id="import-step-one" aria-current="step"><span>1</span>录入名单</li><li class="import-step-arrow" aria-hidden="true"><i class="bi bi-chevron-right"></i></li><li id="import-step-two"><span>2</span>检查并导入</li></ol>
+  <div id="import-discard" class="import-discard" role="alert" hidden><strong>放弃本次导入？</strong><p>已录入的内容不会保存，班级名单不会改变。</p><div><button type="button" class="btn btn-outline-secondary btn-sm" id="import-keep">继续编辑</button><button type="button" class="btn btn-soft btn-sm danger" id="import-discard-confirm">放弃并关闭</button></div></div>
+  <div class="import-drawer-body" id="import-drawer-body">
+    <div id="import-error" class="import-error" role="alert" hidden></div>
+    <fieldset id="import-input-step" class="import-step-content">
+      <legend class="visually-hidden">录入名单</legend>
+      <div class="import-source-tabs" role="tablist" aria-label="录入方式"><button type="button" id="import-tab-paste" role="tab" aria-selected="true" aria-controls="import-paste-panel" data-import-mode="paste"><i class="bi bi-clipboard" aria-hidden="true"></i> 粘贴名单</button><button type="button" id="import-tab-file" role="tab" aria-selected="false" aria-controls="import-file-panel" tabindex="-1" data-import-mode="file"><i class="bi bi-file-earmark-spreadsheet" aria-hidden="true"></i> 上传文件</button></div>
+      <div id="import-paste-panel" role="tabpanel" aria-labelledby="import-tab-paste">
+        <label class="form-label" for="import-text">粘贴名单，一行一位</label><textarea class="form-control" id="import-text" rows="9" spellcheck="false" placeholder="张三 zhangsan@example.com&#10;李四 lisi@example.com" aria-describedby="import-paste-hint"></textarea>
+        <div class="import-input-help"><span id="import-paste-hint">姓名和邮箱之间用空格、逗号或制表符分隔。</span><span id="import-line-count">尚未录入</span></div>
+        <div class="import-example"><i class="bi bi-info-circle" aria-hidden="true"></i><span>可以直接从表格复制两列，包含“姓名、邮箱”表头也没关系。上方地址仅为格式示例。</span></div>
+      </div>
+      <div id="import-file-panel" role="tabpanel" aria-labelledby="import-tab-file" hidden>
+        <div class="import-file-area" id="import-file-area"><span class="import-file-icon"><i class="bi bi-file-earmark-spreadsheet" aria-hidden="true"></i></span><h3>选择一份名单文件</h3><p>支持 CSV 和 XLSX，最多 5 MB、5000 行。</p><label for="import-file" class="visually-hidden">选择名单文件</label><input class="form-control" type="file" id="import-file" accept=".csv,.xlsx" aria-describedby="import-file-hint"><p id="import-file-hint">建议使用“姓名”和“邮箱”作为列名。</p></div>
+        <div class="import-file-selected" id="import-file-selected" hidden><i class="bi bi-file-earmark-spreadsheet" aria-hidden="true"></i><div><strong id="import-file-name"></strong><span id="import-file-size"></span></div><button type="button" class="text-action" id="import-file-replace">更换</button><button type="button" class="icon-btn" id="import-file-remove" aria-label="移除所选文件"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div>
+        <a class="text-action import-sample-link" href="/api/examples/students.csv" download><i class="bi bi-download" aria-hidden="true"></i> 下载导入样例</a>
+      </div>
+      <p class="import-step-note"><i class="bi bi-shield-check" aria-hidden="true"></i> 下一步先检查名单，确认后才写入班级。</p>
+    </fieldset>
+    <fieldset id="import-review-step" class="import-step-content" hidden>
+      <legend class="visually-hidden">检查并导入</legend>
+      <div class="import-review-intro"><h3>检查这份名单</h3><p>重复邮箱会自动跳过；有问题的行会单独标出。</p></div>
+      <div id="import-summary" class="import-review-summary" role="status" aria-live="polite"></div>
+      <details id="import-mapping" class="import-mapping"><summary><span id="import-mapping-summary">已识别姓名与邮箱列</span><span class="import-mapping-action">调整列设置 <i class="bi bi-chevron-down" aria-hidden="true"></i></span></summary><div class="import-mapping-fields"><div><label class="form-label" for="import-name-column">姓名列</label><select class="form-select" id="import-name-column"></select></div><div><label class="form-label" for="import-email-column">邮箱列</label><select class="form-select" id="import-email-column"></select></div><label class="form-check"><input class="form-check-input" type="checkbox" id="import-header"><span class="form-check-label">第一行为表头</span></label><p id="import-mapping-stale" hidden>列设置已变化，请点击底部“重新检查”。</p></div></details>
+      <div class="import-preview-heading"><h3>名单预览</h3><span>每页 50 行</span></div>
+      <div class="import-filter-tabs" role="group" aria-label="筛选检查结果"><button type="button" data-import-filter="all" aria-pressed="true">全部</button><button type="button" data-import-filter="problem" aria-pressed="false">问题</button><button type="button" data-import-filter="duplicate" aria-pressed="false">重复</button></div>
+      <div id="import-results" class="import-preview-results"></div>
+      <div class="import-preview-pagination"><span id="import-preview-range" role="status" aria-live="polite"></span><nav aria-label="导入预览分页"><button type="button" class="icon-btn" id="import-preview-prev" aria-label="上一页预览"><i class="bi bi-chevron-left" aria-hidden="true"></i></button><span id="import-preview-page"></span><button type="button" class="icon-btn" id="import-preview-next" aria-label="下一页预览"><i class="bi bi-chevron-right" aria-hidden="true"></i></button></nav></div>
+      <section class="import-problem-options" id="import-problem-options" aria-labelledby="import-problem-title" hidden><h3 id="import-problem-title">如何处理问题行</h3><p>默认不跳过错误、不覆盖已有姓名。你可以返回修改，或明确选择处理方式。</p><label class="form-check"><input class="form-check-input" id="valid-only" type="checkbox"><span class="form-check-label">仅导入有效行<small>跳过错误和未解决的冲突，重复行始终跳过。</small></span></label><label class="form-check" id="import-overwrite-option" hidden><input class="form-check-input" id="overwrite-conflicts" type="checkbox"><span class="form-check-label">允许覆盖已有姓名<small>仅更新班级中相同邮箱的姓名；不能解决文件内部冲突。</small></span></label></section>
+    </fieldset>
+    <section class="import-completed" id="import-completed" aria-labelledby="import-completed-title" hidden><i class="bi bi-check2-circle" id="import-completed-icon" aria-hidden="true"></i><h3 id="import-completed-title"></h3><p id="import-completed-description"></p><p id="import-completed-note"></p></section>
+  </div>
+  <footer class="import-drawer-footer"><p id="import-footer-hint" role="status" aria-live="polite">先检查，再导入。名单只保存在本机。</p><div><button type="button" class="btn btn-soft" id="import-cancel">取消</button><button type="button" class="btn btn-outline-secondary" id="import-back" hidden>上一步</button><button type="button" class="btn btn-primary" id="import-primary" disabled>下一步：检查名单 <i class="bi bi-arrow-right" aria-hidden="true"></i></button></div></footer>
+</aside>
+<aside class="offcanvas offcanvas-end send-confirm-drawer" tabindex="-1" id="send-confirm-drawer" aria-labelledby="send-confirm-title" aria-describedby="send-confirm-subtitle">
+  <header class="send-confirm-header"><div><p class="send-confirm-kicker">发送前核对</p><h2 id="send-confirm-title">确认发送</h2><p id="send-confirm-subtitle">本次将发送给 <strong id="send-confirm-total">0</strong> 位同学</p></div><button type="button" class="icon-btn" id="send-confirm-close" aria-label="关闭发送确认"><i class="bi bi-x-lg" aria-hidden="true"></i></button></header>
+  <div class="send-confirm-body" id="send-confirm-body">
+    <div id="send-confirm-error" class="send-confirm-error" role="alert" hidden></div>
+    <section id="send-confirm-outcome" class="send-confirm-outcome" aria-labelledby="send-confirm-outcome-title" hidden><i class="bi bi-info-circle" aria-hidden="true"></i><div><h3 id="send-confirm-outcome-title"></h3><p id="send-confirm-outcome-description"></p><p id="send-confirm-outcome-note"></p></div></section>
+    <section class="send-confirm-section send-confirm-envelope" aria-labelledby="send-confirm-envelope-title"><h3 id="send-confirm-envelope-title">发件信息</h3><dl><dt>发送邮箱</dt><dd><strong id="send-confirm-sender-name"></strong><span id="send-confirm-sender-email"></span></dd><dt>收件班级</dt><dd id="send-confirm-class"></dd><dt>邮件主题</dt><dd><span id="send-confirm-subject"></span><small id="send-confirm-subject-hint" hidden></small></dd></dl></section>
+    <section class="send-confirm-section send-confirm-recipients" aria-labelledby="send-confirm-list-title">
+      <div class="send-confirm-section-heading"><h3 id="send-confirm-list-title">本次收件名单</h3><span id="send-confirm-list-total"></span></div>
+      <p class="send-confirm-section-hint">以下是本次全部已选同学，一人一封，不公开其他收件人。</p>
+      <div class="send-confirm-search"><i class="bi bi-search" aria-hidden="true"></i><label class="visually-hidden" for="send-confirm-search">搜索本次收件人的姓名或邮箱</label><input type="search" id="send-confirm-search" placeholder="搜索本次收件人" autocomplete="off" spellcheck="false" aria-controls="send-confirm-list"><button type="button" class="icon-btn" id="send-confirm-search-clear" aria-label="清空收件名单搜索" hidden><i class="bi bi-x-lg" aria-hidden="true"></i></button></div>
+      <p id="send-confirm-match" class="send-confirm-match" role="status" aria-live="polite"></p>
+      <div id="send-confirm-list"></div>
+      <div class="send-confirm-pagination"><span id="send-confirm-range" role="status" aria-live="polite"></span><nav id="send-confirm-pages" aria-label="发送名单分页"></nav></div>
+    </section>
+    <section class="send-confirm-section send-confirm-settings" aria-labelledby="send-confirm-settings-title"><div class="send-confirm-section-heading"><h3 id="send-confirm-settings-title">发送设置</h3><span class="send-policy-origin" id="send-policy-origin">沿用邮箱默认</span></div><div id="send-confirm-policy-slot"></div><div class="send-policy-footnote"><span>发送时请保持电脑与服务运行。</span><button type="button" class="text-action" id="send-policy-reset" hidden>恢复邮箱默认</button></div></section>
+    <details class="send-confirm-preview-section" id="send-confirm-sample"><summary><span><i class="bi bi-envelope" aria-hidden="true"></i> 查看邮件样例</span><i class="bi bi-chevron-down" aria-hidden="true"></i></summary><p id="send-confirm-sample-person"></p><iframe id="send-confirm-preview" sandbox="" title="发送前邮件样例"></iframe></details>
+  </div>
+  <footer class="send-confirm-footer"><label class="send-confirm-ack"><input type="checkbox" id="send-confirm-ack"><span>我已核对发件邮箱、收件名单和邮件内容，允许向这些同学发送。</span></label><p id="send-confirm-footer-hint" role="status" aria-live="polite">勾选确认后，再创建发送任务。</p><div><button type="button" class="btn btn-outline-secondary" id="send-confirm-back">返回修改</button><button type="button" class="btn btn-primary" id="send-confirm-submit" disabled>开始发送</button></div></footer>
+</aside>
+<div class="modal fade" id="dialog" tabindex="-1" aria-labelledby="dialog-title" aria-hidden="true"><div class="modal-dialog modal-dialog-centered modal-lg"><div class="modal-content"><div class="modal-header"><h2 class="modal-title fs-5" id="dialog-title"></h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button></div><div class="modal-body" id="dialog-body"></div><div class="modal-footer"><div id="dialog-error" class="dialog-error me-auto" role="alert"></div><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">取消</button><button type="button" class="btn btn-primary" id="dialog-confirm">确认</button></div></div></div></div>
+<div id="toast-region" class="toast-region" role="status" aria-live="polite"></div>
+<script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script><script src="/static/vendor/quill/quill.js" defer></script><script src="/static/send-policy.js?v=send-policy-20261018-1" defer></script><script src="/static/app.js?v=send-policy-20261018-1" defer></script>
+<script src="/static/import-drawer.js?v=recipient-search-20261018-1" defer></script>
+<script src="/static/send-confirm.js?v=send-policy-20261018-1" defer></script>
+</body></html>
