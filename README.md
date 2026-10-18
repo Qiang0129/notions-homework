@@ -4,12 +4,14 @@
 
 技术：FastAPI、SQLAlchemy / SQLite、Jinja2、Bootstrap 5、Quill 2。无需 Node 构建；静态依赖已随项目提供。
 
+以下所有命令均在项目根目录（本 README 所在目录）执行。
+
 ## 1. 快速启动（Windows / PowerShell）
 
-从任意 PowerShell 目录运行：
+启动应用：
 
 ```powershell
-& 'G:\研究生阶段\助教工作\notions\run.ps1' -OpenBrowser
+& '.\run.ps1' -OpenBrowser
 ```
 
 默认仅监听本机 `127.0.0.1:8000`。首次在运行服务的电脑上打开 `http://127.0.0.1:8000`，设置至少 12 个字符的管理员密码。项目会创建独立 `.venv` 并安装锁定依赖，不修改 Conda 基础环境。首次安装需要联网。
@@ -17,19 +19,19 @@
 若系统禁止运行脚本，可只对这次进程放行，不修改系统策略：
 
 ```powershell
-& 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe' -NoProfile -ExecutionPolicy Bypass -File 'G:\研究生阶段\助教工作\notions\run.ps1' -OpenBrowser
+& 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe' -NoProfile -ExecutionPolicy Bypass -File '.\run.ps1' -OpenBrowser
 ```
 
 指定其他端口：
 
 ```powershell
-& 'G:\研究生阶段\助教工作\notions\run.ps1' -Port 8010 -OpenBrowser
+& '.\run.ps1' -Port 8010 -OpenBrowser
 ```
 
 仅准备环境而不启动：
 
 ```powershell
-& 'G:\研究生阶段\助教工作\notions\run.ps1' -InstallOnly
+& '.\run.ps1' -InstallOnly
 ```
 
 需要 Python 3.11 或更新版本。启动脚本优先使用现场已验证的 `D:\ProgramData\anaconda3\python.exe` 创建虚拟环境，找不到时尝试 Windows Python Launcher。不要使用 `--reload` 或多 worker 运行实际发送任务；同一数据目录的文件锁会拒绝第二个实例。
@@ -37,7 +39,7 @@
 ## 2. 同局域网手机访问
 
 ```powershell
-& 'G:\研究生阶段\助教工作\notions\run.ps1' -Lan -Port 8000
+& '.\run.ps1' -Lan -Port 8000
 ```
 
 1. 先从电脑本机完成首次管理员密码设置。
@@ -85,7 +87,7 @@ CSV 支持 UTF-8 / UTF-8 BOM / GB18030；XLSX 读取第一个工作表。支持�
 - 有错误时默认阻止确认；你可以明确选择“仅导入有效行”。
 - 勾选“覆盖班级中同邮箱、不同姓名”才更新已有姓名；文件内部的姓名冲突需修正或跳过。
 - 每个任务只选一个班级，可选部分同学；发送前再次按邮箱去重。
-- 示例位于 `G:\研究生阶段\助教工作\notions\examples`，全部使用虚构姓名和 `example.com` 地址，不会自动导入或发送。
+- 示例位于 `.\examples`，全部使用虚构姓名和 `example.com` 地址，不会自动导入或发送。
 
 ### 草稿、模板与变量
 
@@ -111,7 +113,7 @@ CSV 支持 UTF-8 / UTF-8 BOM / GB18030；XLSX 读取第一个工作表。支持�
 
 ## 5. 数据、安全与备份
 
-- 默认数据库：`C:\Users\1\AppData\Local\HomeworkReminder\app.db`。
+- 默认数据库：`%LOCALAPPDATA%\HomeworkReminder\app.db`。
 - 可用 `HMR_DATA_DIR` 环境变量指定其他数据目录；一个目录只允许运行一个实例。
 - SMTP 授权码：Windows Credential Locker，服务名 `HomeworkReminder.SMTP`。数据库只存引用；凭据库失败时不回退到明文文件。
 - 管理员密码：Argon2 哈希；会话为服务端记录，Cookie 为 HttpOnly / SameSite=Strict，8 小时过期。具备 CSRF、来源检查和登录限速。
@@ -123,7 +125,7 @@ CSV 支持 UTF-8 / UTF-8 BOM / GB18030；XLSX 读取第一个工作表。支持�
 忘记管理员密码：停止服务后，在电脑本机运行以下交互命令（密码不会出现在命令行或参数中）：
 
 ```powershell
-& 'G:\研究生阶段\助教工作\notions\.venv\Scripts\python.exe' 'G:\研究生阶段\助教工作\notions\scripts\reset_password.py'
+& '.\.venv\Scripts\python.exe' '.\scripts\reset_password.py'
 ```
 
 只重置管理员密码并使旧会话退出，不修改班级、通知和 SMTP 凭据。
@@ -133,21 +135,20 @@ CSV 支持 UTF-8 / UTF-8 BOM / GB18030；XLSX 读取第一个工作表。支持�
 安装开发依赖到项目虚拟环境：
 
 ```powershell
-& 'G:\研究生阶段\助教工作\notions\.venv\Scripts\python.exe' -m pip install -r 'G:\研究生阶段\助教工作\notions\requirements-dev.lock.txt'
-Set-Location -LiteralPath 'G:\研究生阶段\助教工作\notions'
-& 'G:\研究生阶段\助教工作\notions\.venv\Scripts\python.exe' -m pytest -q
-& 'G:\研究生阶段\助教工作\notions\.venv\Scripts\python.exe' 'G:\研究生阶段\助教工作\notions\scripts\browser_check.py'
+& '.\.venv\Scripts\python.exe' -m pip install -r '.\requirements-dev.lock.txt'
+& '.\.venv\Scripts\python.exe' -m pytest -q
+& '.\.venv\Scripts\python.exe' '.\scripts\browser_check.py'
 ```
 
 浏览器检查优先使用已安装的 Microsoft Edge，找不到时使用 Playwright Chromium；后者需先执行：
 
 ```powershell
-& 'G:\研究生阶段\助教工作\notions\.venv\Scripts\python.exe' -m playwright install chromium
+& '.\.venv\Scripts\python.exe' -m playwright install chromium
 ```
 
 浏览器检查使用临时数据库、内存测试凭据和 SMTP 捕获替身，测试结束关闭服务；不会访问生产数据目录或发送外部邮件。另有真实 localhost SMTP 测试验证 MIME 与收件人隔离，TLS 路径通过故障注入和参数断言验证；实际 QQ/Gmail 认证与最终收件效果仍需你的账号和测试地址。
 
-截图与浏览器报告写入 `G:\研究生阶段\助教工作\notions\output\playwright`。依赖和静态资源版本/校验信息分别见锁定文件及 `app/static/vendor/manifest.json`。
+截图与浏览器报告写入 `.\output\playwright`。依赖和静态资源版本/校验信息分别见锁定文件及 `app/static/vendor/manifest.json`。
 
 ## 7. 第一版边界
 
@@ -167,7 +168,7 @@ Set-Location -LiteralPath 'G:\研究生阶段\助教工作\notions'
 独立验证邮件样式（使用虚构数据，无 SMTP）：
 
 ```powershell
-& 'G:\研究生阶段\助教工作\notions\.venv\Scripts\python.exe' 'G:\研究生阶段\助教工作\notions\scripts\email_design_check.py'
+& '.\.venv\Scripts\python.exe' '.\scripts\email_design_check.py'
 ```
 
 需要开发依赖；截图为 `output/playwright/email-reference-840.png` 与 `email-reference-375.png`。如修改自绘 SVG，可用 `scripts/build_email_assets.py` 重新生成 PNG；生产运行不需要执行此步骤。
@@ -186,10 +187,10 @@ Set-Location -LiteralPath 'G:\研究生阶段\助教工作\notions'
 专项验证命令（虚构数据、临时数据库和模拟 SMTP，不接触真实名单）：
 
 ```powershell
-& 'G:\研究生阶段\助教工作\notions\.venv\Scripts\python.exe' -B 'G:\研究生阶段\助教工作\notions\scripts\roster_browser_check.py'
+& '.\.venv\Scripts\python.exe' -B '.\scripts\roster_browser_check.py'
 ```
 
-对比截图与专项报告位于 `G:\研究生阶段\助教工作\notions\output\playwright\roster`。主对比截图为 `before-desktop.png` / `after-desktop.png`、`before-mobile.png` / `after-mobile.png`；全部使用虚构名单。`--baseline` 参数仅用于未来改造前生成基线，会覆盖旧的 before 截图，请勿在改造后为复验使用该参数。
+对比截图与专项报告位于 `.\output\playwright\roster`。主对比截图为 `before-desktop.png` / `after-desktop.png`、`before-mobile.png` / `after-mobile.png`；全部使用虚构名单。`--baseline` 参数仅用于未来改造前生成基线，会覆盖旧的 before 截图，请勿在改造后为复验使用该参数。
 
 
 ## 10. 批量导入右侧抽屉（2026-10-18）
@@ -205,10 +206,10 @@ Set-Location -LiteralPath 'G:\研究生阶段\助教工作\notions'
 专项验证入口（临时数据库、虚构名单，无 SMTP 发送）：
 
 ```powershell
-& 'G:\研究生阶段\助教工作\notions\.venv\Scripts\python.exe' -B 'G:\研究生阶段\助教工作\notions\scripts\import_drawer_browser_check.py'
+& '.\.venv\Scripts\python.exe' -B '.\scripts\import_drawer_browser_check.py'
 ```
 
-截图和报告：`G:\研究生阶段\助教工作\notions\output\playwright\import-drawer`。前端版本为 `import-drawer-20261018-1`，刷新页面即可加载；不需要为前端更新重启活动发送任务。
+截图和报告：`.\output\playwright\import-drawer`。前端版本为 `import-drawer-20261018-1`，刷新页面即可加载；不需要为前端更新重启活动发送任务。
 
 ### 本次遇到的本机 WMI 查询卡顿
 
@@ -217,13 +218,13 @@ Set-Location -LiteralPath 'G:\研究生阶段\助教工作\notions'
 若普通命令在导入阶段出现相同卡顿，可仅对当前验证进程使用：
 
 ```powershell
-& 'G:\研究生阶段\助教工作\notions\.venv\Scripts\python.exe' -B -u -c "import sys,runpy;sys.modules['_wmi']=None;script=sys.argv.pop(1);runpy.run_path(script,run_name='__main__')" 'G:\研究生阶段\助教工作\notions\scripts\import_drawer_browser_check.py'
+& '.\.venv\Scripts\python.exe' -B -u -c "import sys,runpy;sys.modules['_wmi']=None;script=sys.argv.pop(1);runpy.run_path(script,run_name='__main__')" '.\scripts\import_drawer_browser_check.py'
 ```
 
 如需以同样方式启动本机服务，先确认没有其他实例运行：
 
 ```powershell
-& 'G:\研究生阶段\助教工作\notions\.venv\Scripts\python.exe' -B -u -c "import sys,runpy;sys.modules['_wmi']=None;script=sys.argv.pop(1);runpy.run_path(script,run_name='__main__')" 'G:\研究生阶段\助教工作\notions\scripts\serve.py' --port 8000
+& '.\.venv\Scripts\python.exe' -B -u -c "import sys,runpy;sys.modules['_wmi']=None;script=sys.argv.pop(1);runpy.run_path(script,run_name='__main__')" '.\scripts\serve.py' --port 8000
 ```
 
 
@@ -242,16 +243,16 @@ Set-Location -LiteralPath 'G:\研究生阶段\助教工作\notions'
 专项验证（临时 SQLite、虚构名单和模拟发送）：
 
 ```powershell
-& 'G:\研究生阶段\助教工作\notions\.venv\Scripts\python.exe' -B 'G:\研究生阶段\助教工作\notions\scripts\recipient_browser_check.py'
+& '.\.venv\Scripts\python.exe' -B '.\scripts\recipient_browser_check.py'
 ```
 
 本机如仍出现前节记录的 WMI 查询卡顿，可只对当前验证进程使用同样的兼容方式：
 
 ```powershell
-& 'G:\研究生阶段\助教工作\notions\.venv\Scripts\python.exe' -B -u -c "import sys,runpy;sys.modules['_wmi']=None;script=sys.argv.pop(1);runpy.run_path(script,run_name='__main__')" 'G:\研究生阶段\助教工作\notions\scripts\recipient_browser_check.py'
+& '.\.venv\Scripts\python.exe' -B -u -c "import sys,runpy;sys.modules['_wmi']=None;script=sys.argv.pop(1);runpy.run_path(script,run_name='__main__')" '.\scripts\recipient_browser_check.py'
 ```
 
-截图和报告在 `G:\研究生阶段\助教工作\notions\output\playwright\recipient-search`。`--baseline` 只用于未来改造前捕获基线，请勿为了复测覆盖已保存的改前截图。新版静态资源标识为 `recipient-search-20261018-1`，刷新即可加载，不需要重启运行中的服务。
+截图和报告在 `.\output\playwright\recipient-search`。`--baseline` 只用于未来改造前捕获基线，请勿为了复测覆盖已保存的改前截图。新版静态资源标识为 `recipient-search-20261018-1`，刷新即可加载，不需要重启运行中的服务。
 
 ## 正式发送确认抽屉
 
@@ -260,10 +261,10 @@ Set-Location -LiteralPath 'G:\研究生阶段\助教工作\notions'
 隔离浏览器验收命令：
 
 ```powershell
-& 'G:\研究生阶段\助教工作\notions\.venv\Scripts\python.exe' 'G:\研究生阶段\助教工作\notions\scripts\send_drawer_browser_check.py'
+& '.\.venv\Scripts\python.exe' '.\scripts\send_drawer_browser_check.py'
 ```
 
-该脚本仅使用虚构名单、静态页面和模拟 API，不读取生产数据库、不连接 SMTP。报告与截图位于 `G:\研究生阶段\助教工作\notions\output\playwright\send-drawer`。正式静态资源标识为 `send-drawer-20261018-1`，不需要为前端更新重启活动服务。
+该脚本仅使用虚构名单、静态页面和模拟 API，不读取生产数据库、不连接 SMTP。报告与截图位于 `.\output\playwright\send-drawer`。正式静态资源标识为 `send-drawer-20261018-1`，不需要为前端更新重启活动服务。
 
 ## 可调并发与发送策略（2026-10-18）
 
@@ -278,9 +279,8 @@ Set-Location -LiteralPath 'G:\研究生阶段\助教工作\notions'
 回归验证命令（只启动临时测试实例，使用虚构名单、MemoryVault 与模拟 SMTP）：
 
 ```powershell
-Set-Location -LiteralPath 'G:\研究生阶段\助教工作\notions'
-& 'G:\研究生阶段\助教工作\notions\.venv\Scripts\python.exe' -B -u -c "import sys;sys.modules['_wmi']=None;import pytest;raise SystemExit(pytest.main(['-q','--junitxml=output/pytest-send-policy-full.xml']))"
-& 'G:\研究生阶段\助教工作\notions\.venv\Scripts\python.exe' -B -u -c "import sys,runpy;sys.modules['_wmi']=None;runpy.run_path('scripts/send_policy_browser_check.py',run_name='__main__')"
+& '.\.venv\Scripts\python.exe' -B -u -c "import sys;sys.modules['_wmi']=None;import pytest;raise SystemExit(pytest.main(['-q','--junitxml=output/pytest-send-policy-full.xml']))"
+& '.\.venv\Scripts\python.exe' -B -u -c "import sys,runpy;sys.modules['_wmi']=None;runpy.run_path('scripts/send_policy_browser_check.py',run_name='__main__')"
 ```
 
-上述命令在 `G:\研究生阶段\助教工作\notions` 运行。`_wmi` 回退仅作用于验证进程，不修改系统、依赖或凭据；没有 WMI 问题的环境可直接运行 pytest 或专项脚本。证据与桌面/手机截图见 `output\playwright\send-policy` 及 `TEST_REPORT.md`。
+上述命令在项目根目录运行。`_wmi` 回退仅作用于验证进程，不修改系统、依赖或凭据；没有 WMI 问题的环境可直接运行 pytest 或专项脚本。证据与桌面/手机截图见 `output\playwright\send-policy` 及 `TEST_REPORT.md`。

@@ -1,6 +1,6 @@
 # 验证报告 · 课信 v1
 
-首版验证日期：2026-10-17；最近复核：2026-10-18（北京时间）。工作目录：`G:\研究生阶段\助教工作\notions`。
+首版验证日期：2026-10-17；最近复核：2026-10-18（北京时间）。工作目录：项目根目录。
 
 ## 执行结果
 
@@ -92,9 +92,9 @@
 
 ### 实测结果
 
-- 现有后端回归：**65 passed，1 条上游 Starlette/httpx 弃用警告，12.76 秒**。本次 JUnit 证据为 `G:\研究生阶段\助教工作\notions\output\pytest-roster.xml`。
+- 现有后端回归：**65 passed，1 条上游 Starlette/httpx 弃用警告，12.76 秒**。本次 JUnit 证据为 `.\output\pytest-roster.xml`。
 - 原有完整浏览器流程再次通过；字号断言保持 16/14/15/13px，console error、page error、外部资源请求均为 0。该流程捕获 4 封模拟邮件。
-- 新增名单专项脚本：`G:\研究生阶段\助教工作\notions\scripts\roster_browser_check.py`。使用临时 SQLite、MemoryVault、FakeFactory 和独立 Edge 浏览器上下文，不读取个人浏览器登录数据或真实名单。
+- 新增名单专项脚本：`.\scripts\roster_browser_check.py`。使用临时 SQLite、MemoryVault、FakeFactory 和独立 Edge 浏览器上下文，不读取个人浏览器登录数据或真实名单。
 - 0 / 1 / 20 / 21 / 66 / 200 / 5000 人 × 每页 20 / 50 / 100 人共 21 组数据；逐页渲染并与 API 返回的完整有序 ID 列表比较，确认无遗漏、无重复，DOM 行数不超过所选条数。5000 人、每页 20 人共 250 页。
 - 通过实际翻页、跨页搜索、清空搜索、切换条数、编辑保留筛选/页码、删除末页单行、新增/导入后重置、班级创建/改名/删除等操作断言。
 - 故意挂起旧班级请求，分别返回迟到的成功和失败，确认不覆盖新班级；当前请求失败时不留旧名单，重试恢复。两次 HTTP 503 是明确的故障注入，其预期控制台网络错误单独核对，不计为意外错误。
@@ -106,18 +106,18 @@
 
 ### 截图、报告和运行入口
 
-- 专项 JSON：`G:\研究生阶段\助教工作\notions\output\playwright\roster\report.json`，包含分页覆盖、各尺寸实际几何数据、对比度和意外错误计数。
+- 专项 JSON：`.\output\playwright\roster\report.json`，包含分页覆盖、各尺寸实际几何数据、对比度和意外错误计数。
 - 改前/改后主图：同目录 `before-desktop.png`、`after-desktop.png`、`before-mobile.png`、`after-mobile.png`；均使用虚构的 66 人名单和相同的七班级基线。其他尺寸截图包含额外班级压力数据。
-- 修改前的三个源文件已复制到 `G:\研究生阶段\助教工作\notions\output\roster-backup-20261018-123711`；文本差异保存在 `G:\研究生阶段\助教工作\notions\output\roster-changes.diff`。
+- 修改前的三个源文件已复制到 `.\output\roster-backup-20261018-123711`；文本差异保存在 `.\output\roster-changes.diff`。
 - 本次开始检查时 8000 没有监听，不是此前报告的运行状态。完成后启动原生产入口，未中断或重启活动发送服务：只监听 `127.0.0.1:8000`，当前验证服务 PID 80640（短期快照）。
 - `/login`、版本化的 `app.css` 和 `app.js` 均 HTTP 200，返回内容包含新的名单实现；管理员配置仍存在，未重置密码或读取凭据。
-- 日志：`G:\研究生阶段\助教工作\notions\output\server-roster-20261018-125236.stderr.log`。实际手机、QQ/Gmail 客户端投递等仍不属于本次验证。
+- 日志：`.\output\server-roster-20261018-125236.stderr.log`。实际手机、QQ/Gmail 客户端投递等仍不属于本次验证。
 
 - 最后一轮复测捕获并修复班级弹窗的快速确认竞态：Bootstrap 展开动画期间忽略关闭调用。仅在班级操作成功后等待公开的 `shown.bs.modal` 事件再关闭，不改变邮件确认流程。专项测试在打开删除框的同一个事件轮次立即确认，核验删除生效且弹窗正常关闭。
 - 前端最终版本参数为 `roster-20261018-2`，避免测试期间曾加载第一版资源的浏览器继续使用旧缓存。
 
 - 最终专项报告包含 10 组功能验收及 21 组分页数据组合；同一隔离服务内重新加载页面后，HTML 引用的 CSS / JS 版本参数仍正确。
-- 最终在线静态验证记录在 `G:\研究生阶段\助教工作\notions\output\playwright\roster\live-static-check.json`：两个静态文件 HTTP 200，下载内容与磁盘文件逐字节一致；未为更新静态资源重启服务。
+- 最终在线静态验证记录在 `.\output\playwright\roster\live-static-check.json`：两个静态文件 HTTP 200，下载内容与磁盘文件逐字节一致；未为更新静态资源重启服务。
 
 
 ## 批量导入两步式右侧抽屉（2026-10-18）
@@ -126,7 +126,7 @@
 
 - 新增独立的 `app/static/import-drawer.js` 控制器和页面根部 Offcanvas；移除原批量导入通用 modal 处理器。现有后端接口、SQLite 结构、导入判定规则、邮件/SMTP 模块未修改。
 - 更新 `scripts/browser_check.py` 和 `scripts/roster_browser_check.py` 的批量导入选择器，其他弹窗仍使用原选择器；新增 `scripts/import_drawer_browser_check.py`。
-- 修改前文件备份：`G:\研究生阶段\助教工作\notions\output\import-drawer-backup-20261018-133152`。源码差异：`G:\研究生阶段\助教工作\notions\output\import-drawer-changes.diff`。
+- 修改前文件备份：`.\output\import-drawer-backup-20261018-133152`。源码差异：`.\output\import-drawer-changes.diff`。
 
 ### 本次实测
 
@@ -148,7 +148,7 @@
 - 本次验证中 Windows WMI 调用出现系统级挂起，堆栈为 Python `platform._wmi_query → platform.machine → argon2`；CIM 查询也未能完成。原生测试运行在进入测试前被阻塞，不能算作通过。只终止了本次识别出的挂起测试/诊断 Python 进程。
 - 后续测试在当前进程设置 `sys.modules['_wmi']=None`，使用 Python 已有的 Windows 非 WMI 回退完成验证；没有改全局配置、Python/依赖源码或系统服务。这是环境兼容回退，不是修复了 WMI。
 - 正式 8000 当时没有监听，故以相同的进程内回退启动原 `scripts/serve.py`，不是重启活动发送服务。验证仅监听 `127.0.0.1:8000`；当次服务 PID 90556，管理员配置仍存在。三个前端静态文件 HTTP 200 且逐字节匹配磁盘文件，登录页 HTTP 200。
-- 当前启动日志：`G:\研究生阶段\助教工作\notions\output\server-import-drawer-20261018-135449.stderr.log`。PID/端口属于当次快照，未来需现场复核；普通启动若仍卡在 WMI，可用 README 的进程级兼容命令。
+- 当前启动日志：`.\output\server-import-drawer-20261018-135449.stderr.log`。PID/端口属于当次快照，未来需现场复核；普通启动若仍卡在 WMI，可用 README 的进程级兼容命令。
 - 本次未改真实名单或凭据，未触发真实邮件投递。真实手机、局域网和实际邮箱收件不属于本次验证。
 
 
@@ -159,7 +159,7 @@
 - 只重排写通知中的收件人组件，新增搜索、明确的“已选 / 总数”、匹配统计和隐藏已选提示；工具区不随 260px 名单滚动，所有验证仅使用虚构名单。
 - `app/static/app.js` 将完整学生、完整已选集合、筛选视图和加载意图区分开；保存和发送仍读取完整集合。加载失败与进行中阻止发送/保存，避免临时空名单覆盖草稿。
 - `app/static/import-drawer.js` 仅调整成功后刷新收件名单的一处调用，复用保留选择意图的新刷新函数；抽屉 UI 和导入判定未变。后端 API、数据库结构、模板、SMTP 代码未改。
-- 修改前备份：`G:\研究生阶段\助教工作\notions\output\recipient-search-backup-20261018-141557`。源码差异：`G:\研究生阶段\助教工作\notions\output\recipient-search-changes.diff`。
+- 修改前备份：`.\output\recipient-search-backup-20261018-141557`。源码差异：`.\output\recipient-search-changes.diff`。
 
 ### 重新执行的验证
 
